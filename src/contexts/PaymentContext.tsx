@@ -7,11 +7,12 @@ import React, {
 } from "react";
 import { callApi } from "../api/api";
 import { PaymentModel } from "../types";
+import { useUserContext } from "./UserContext";
 
 interface PaymentContextType {
   payments: PaymentModel[];
   fetchPayments: () => void;
-  addPayment: (payment: Omit<PaymentModel, '_id' | 'date' | 'status'>) => void;
+  addPayment: (payment: Omit<PaymentModel, "_id" | "date" | "status">) => void;
   updatePayment: (_id: string, updates: Partial<PaymentModel>) => void;
   deletePayment: (_id: string) => void;
   prevPayments: (payments: PaymentModel[]) => void;
@@ -32,6 +33,7 @@ export const usePaymentContext = () => {
 export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { user } = useUserContext();
   const [payments, setPayments] = useState<PaymentModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +41,7 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
   const fetchPayments = async () => {
     try {
       setIsLoading(true);
-      const fetchedPayments = await callApi({ endpoint: "/payments" });
+      const fetchedPayments = await callApi({ endpoint: "/payments", token: user?.token });
       setPayments(fetchedPayments);
       setError(null);
     } catch (err) {
@@ -50,17 +52,20 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const addPayment = async (payment: Omit<PaymentModel, '_id' | 'date' | 'status'>) => {
+  const addPayment = async (
+    payment: Omit<PaymentModel, "_id" | "date" | "status">
+  ) => {
     try {
       const newPayment = await callApi({
-        endpoint: '/payments',
-        requestType: 'POST',
+        endpoint: "/payments",
+        token: user?.token,
+        requestType: "POST",
         data: payment,
       });
       setPayments([...payments, newPayment]);
     } catch (err) {
-      setError('Failed to add payment. Please try again.');
-      console.error('Error adding payment:', err);
+      setError("Failed to add payment. Please try again.");
+      console.error("Error adding payment:", err);
     }
   };
 
@@ -68,13 +73,16 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const updatedPayment = await callApi({
         endpoint: `/payments/${id}`,
-        requestType: 'PUT',
+        token: user?.token,
+        requestType: "PUT",
         data: updates,
       });
-      setPayments(payments.map(p => p._id === id ? { ...p, ...updatedPayment } : p));
+      setPayments(
+        payments.map((p) => (p._id === id ? { ...p, ...updatedPayment } : p))
+      );
     } catch (err) {
-      setError('Failed to update payment. Please try again.');
-      console.error('Error updating payment:', err);
+      setError("Failed to update payment. Please try again.");
+      console.error("Error updating payment:", err);
     }
   };
 
@@ -82,12 +90,13 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
     try {
       await callApi({
         endpoint: `/payments/${id}`,
-        requestType: 'DELETE',
+        token: user?.token,
+        requestType: "DELETE",
       });
-      setPayments(payments.filter(p => p._id !== id));
+      setPayments(payments.filter((p) => p._id !== id));
     } catch (err) {
-      setError('Failed to delete payment. Please try again.');
-      console.error('Error deleting payment:', err);
+      setError("Failed to delete payment. Please try again.");
+      console.error("Error deleting payment:", err);
     }
   };
 

@@ -9,7 +9,7 @@ interface ApiOptions {
 
 export const callApi = async ({ data, requestType = 'GET', endpoint, token }: ApiOptions) => {
   try {
-    const API_BASE_URL = 'http://localhost:9000/api';
+    const API_BASE_URL = 'https://mbms-backend.onrender.com/api';
 
     let response;
     if (!token) {

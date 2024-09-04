@@ -1,12 +1,19 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { callApi } from "../api/api";
 import { OrderModel } from "../types";
+import { useUserContext } from "./UserContext";
 
 interface OrderContextType {
   orders: OrderModel[];
   fetchOrders: () => void;
-  addOrder: (order: Omit<OrderModel, '_id' | 'delivery'>) => void;
-  updateOrderStatus: (id: string, status: OrderModel['delivery']) => void;
+  addOrder: (order: Omit<OrderModel, "_id" | "delivery">) => void;
+  updateOrderStatus: (id: string, status: OrderModel["delivery"]) => void;
   deleteOrder: (id: string) => void;
   prevOrders: (orders: OrderModel[]) => void;
   isLoading: boolean;
@@ -18,12 +25,15 @@ const OrderContext = createContext<OrderContextType | undefined>(undefined);
 export const useOrderContext = () => {
   const context = useContext(OrderContext);
   if (context === undefined) {
-    throw new Error('useOrderContext must be used within an OrderProvider');
+    throw new Error("useOrderContext must be used within an OrderProvider");
   }
   return context;
 };
 
-export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const OrderProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const { user } = useUserContext();
   const [orders, setOrders] = useState<OrderModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +41,10 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const fetchedOrders = await callApi({ endpoint: "/orders" });
+      const fetchedOrders = await callApi({
+        endpoint: "/orders",
+        token: user?.token,
+      });
       setOrders(fetchedOrders);
       setError(null);
     } catch (err) {
@@ -42,26 +55,31 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
-  const addOrder = async (order: Omit<OrderModel, '_id' | 'delivery'>) => {
+  const addOrder = async (order: Omit<OrderModel, "_id" | "delivery">) => {
     try {
       const newOrder = await callApi({
-        endpoint: '/orders',
-        requestType: 'POST',
+        endpoint: "/orders",
+        token: user?.token,
+        requestType: "POST",
         data: order,
       });
       setOrders((prevOrders) => [...prevOrders, newOrder]);
     } catch (err) {
-      setError('Failed to add order. Please try again.');
-      console.error('Error adding order:', err);
+      setError("Failed to add order. Please try again.");
+      console.error("Error adding order:", err);
     }
   };
 
-  const updateOrderStatus = async (id: string, status: OrderModel['delivery']) => {
+  const updateOrderStatus = async (
+    id: string,
+    status: OrderModel["delivery"]
+  ) => {
     try {
-      debugger
+      debugger;
       const updatedOrder = await callApi({
         endpoint: `/orders/${id}`,
-        requestType: 'PUT',
+        token: user?.token,
+        requestType: "PUT",
         data: { delivery: status },
       });
       setOrders((prevOrders) =>
@@ -70,8 +88,8 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         )
       );
     } catch (err) {
-      setError('Failed to update order status. Please try again.');
-      console.error('Error updating order status:', err);
+      setError("Failed to update order status. Please try again.");
+      console.error("Error updating order status:", err);
     }
   };
 
@@ -79,12 +97,13 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       await callApi({
         endpoint: `/orders/${id}`,
-        requestType: 'DELETE',
+        token: user?.token,
+        requestType: "DELETE",
       });
       setOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
     } catch (err) {
-      setError('Failed to delete order. Please try again.');
-      console.error('Error deleting order:', err);
+      setError("Failed to delete order. Please try again.");
+      console.error("Error deleting order:", err);
     }
   };
 
@@ -93,16 +112,18 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   return (
-    <OrderContext.Provider value={{ 
-      orders, 
-      fetchOrders,
-      addOrder, 
-      updateOrderStatus, 
-      deleteOrder, 
-      prevOrders, 
-      isLoading, 
-      error 
-    }}>
+    <OrderContext.Provider
+      value={{
+        orders,
+        fetchOrders,
+        addOrder,
+        updateOrderStatus,
+        deleteOrder,
+        prevOrders,
+        isLoading,
+        error,
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );

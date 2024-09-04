@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   return (
     <Box sx={{ my: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Welcome to My MUI React App
+        Welcome to My MUI Mobile Booking App
       </Typography>
       {user ? (
         <Typography variant="body1">You are logged in as {user.name}</Typography>
