@@ -11,7 +11,7 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useUserContext();
+  const { register } = useUserContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -22,23 +22,8 @@ const Register: React.FC = () => {
       setError("Passwords don't match");
       return;
     }
-
-    const username = email.split("@")[0];
-
-    try {
-      const { user, token } = await callApi({
-        data: { name, username, email, password },
-        requestType: "POST",
-        endpoint: "/users/register",
-      });
-
-      // login({ name, email, token, username, isAdmin: true });
-      
-      navigate("/dashboard");
-    } catch (error) {
-      setError("Registration failed. Please try again.");
-      console.error("Registration error:", error);
-    }
+    register({ name, email, password });
+    navigate("/dashboard");
   };
 
   return (

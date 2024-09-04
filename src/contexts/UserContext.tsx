@@ -5,6 +5,7 @@ import { callApi } from "../api/api";
 
 interface UserContextType {
   user: UserModel | null;
+  register: (user: Omit<UserModel, "_id" | "token" | "username">) => void;
   login: (user: Omit<UserModel, "_id" | "token" | "username" | "name">) => void;
   logout: () => void;
   isLoading: boolean;
@@ -28,6 +29,24 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const register = async (newUser: Omit<UserModel, "_id" | "token" | "username">) => {
+    try {
+      setIsLoading(true);
+      const { user, token } = await callApi({
+        data: newUser,
+        requestType: "POST",
+        endpoint: "/users/register",
+      });
+      setUser({ ...user, token });
+      setError(null);
+    } catch (err) {
+      setError("Unable to register. Please try again.");
+      console.error("Ristration error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const login = async (newUser: Omit<UserModel, "_id" | "token" | "username" | "name">) => {
     try {
       setIsLoading(true);
@@ -50,7 +69,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   };
 
-  const value = { user, login, logout, isLoading, error };
+  const value = { user, register, login, logout, isLoading, error };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

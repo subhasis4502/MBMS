@@ -2,13 +2,14 @@
 import React from 'react';
 import { Typography, Button, Box } from '@mui/material';
 import { useUserContext } from '../../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
-  const { user, login } = useUserContext();
+  const { user } = useUserContext();
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    // Simulating a login action
-    // login({ name: 'John Doe', email: 'john@example.com', username:'johnTest', token: '', isAdmin: true });
+    navigate("/login")
   };
 
   return (
