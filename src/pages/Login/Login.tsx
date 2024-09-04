@@ -15,7 +15,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    login(newUser);
+    await login(newUser);
 
     navigate("/dashboard");
   };

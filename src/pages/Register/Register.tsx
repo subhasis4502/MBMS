@@ -22,7 +22,8 @@ const Register: React.FC = () => {
       setError("Passwords don't match");
       return;
     }
-    register({ name, email, password });
+
+    await register({ name, email, password });
     navigate("/dashboard");
   };
 
