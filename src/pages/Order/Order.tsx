@@ -37,7 +37,6 @@ const Order: React.FC = () => {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
-  const [profit, setProfit] = useState(0);
   const [newOrder, setNewOrder] = useState({
     deviceName: "",
     platform: "",
@@ -46,7 +45,7 @@ const Order: React.FC = () => {
     quantity: 1,
     pincode: "",
     amountPaid: 0,
-    returnAmount: 0,
+    profit: 0,
     doneBy: "",
   });
   const [newStatus, setNewStatus] = useState<
@@ -72,10 +71,9 @@ const Order: React.FC = () => {
         quantity: 1,
         pincode: "",
         amountPaid: 0,
-        returnAmount: 0,
+        profit: 0,
         doneBy: "",
       });
-      setProfit(0);
     }
     setOpenCreateDialog(false);
   };
@@ -271,14 +269,13 @@ const Order: React.FC = () => {
             type="number"
             fullWidth
             required
-            value={profit}
-            onChange={(e) => {
-              setProfit(parseInt(e.target.value));
+            value={newOrder.profit}
+            onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                returnAmount: profit + newOrder.amountPaid || 0,
-              });
-            }}
+                profit: parseInt(e.target.value) || 0,
+              })
+            }
           />
         </DialogContent>
         <DialogActions>

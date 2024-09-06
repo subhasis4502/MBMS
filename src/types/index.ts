@@ -29,7 +29,7 @@ export interface OrderModel {
   quantity: number;
   pincode: string;
   amountPaid: number;
-  returnAmount: number;
+  profit: number;
   doneBy: string;
   delivery: 'Pending' | 'Shipped' | 'Delivered';
 }
