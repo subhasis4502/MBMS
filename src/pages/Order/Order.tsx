@@ -37,6 +37,7 @@ const Order: React.FC = () => {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [profit, setProfit] = useState(0);
   const [newOrder, setNewOrder] = useState({
     deviceName: "",
     platform: "",
@@ -55,12 +56,27 @@ const Order: React.FC = () => {
   const handleCreateOrder = async () => {
     const username = user ? user.username : "";
 
-    addOrder({ ...newOrder, doneBy: username });
-    addPayment({
-      amount: newOrder.amountPaid,
-      source: newOrder.card,
-      type: "Debit",
-    });
+    await addOrder({ ...newOrder, doneBy: username });
+    if (!error) {
+      addPayment({
+        amount: newOrder.amountPaid,
+        source: newOrder.card,
+        type: "Debit",
+      });
+
+      setNewOrder({
+        deviceName: "",
+        platform: "",
+        orderId: "",
+        card: "",
+        quantity: 1,
+        pincode: "",
+        amountPaid: 0,
+        returnAmount: 0,
+        doneBy: "",
+      });
+      setProfit(0);
+    }
     setOpenCreateDialog(false);
   };
 
@@ -177,7 +193,9 @@ const Order: React.FC = () => {
               }
             >
               {PLATFORM.map((platform) => (
-                <MenuItem key={platform} value={platform}>{platform}</MenuItem>
+                <MenuItem key={platform} value={platform}>
+                  {platform}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -203,7 +221,9 @@ const Order: React.FC = () => {
               }
             >
               {CARDS.map((card) => (
-                <MenuItem key={card} value={card}>{card}</MenuItem>
+                <MenuItem key={card} value={card}>
+                  {card}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -251,13 +271,14 @@ const Order: React.FC = () => {
             type="number"
             fullWidth
             required
-            value={newOrder.returnAmount}
-            onChange={(e) =>
+            value={profit}
+            onChange={(e) => {
+              setProfit(parseInt(e.target.value));
               setNewOrder({
                 ...newOrder,
-                returnAmount: parseInt(e.target.value) + newOrder.amountPaid || 0,
-              })
-            }
+                returnAmount: profit + newOrder.amountPaid || 0,
+              });
+            }}
           />
         </DialogContent>
         <DialogActions>
