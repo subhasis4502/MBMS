@@ -27,6 +27,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useUserContext } from "../../contexts/UserContext";
 import { usePaymentContext } from "../../contexts/PaymentContext";
+import { CARDS, PLATFORM } from "../../types";
 
 const Order: React.FC = () => {
   const { orders, fetchOrders, addOrder, updateOrderStatus, isLoading, error } =
@@ -41,7 +42,7 @@ const Order: React.FC = () => {
     platform: "",
     orderId: "",
     card: "",
-    quantity: 0,
+    quantity: 1,
     pincode: "",
     amountPaid: 0,
     returnAmount: 0,
@@ -55,7 +56,11 @@ const Order: React.FC = () => {
     const username = user ? user.username : "";
 
     addOrder({ ...newOrder, doneBy: username });
-    addPayment({amount: newOrder.amountPaid, source: newOrder.card, type: "Debit"});
+    addPayment({
+      amount: newOrder.amountPaid,
+      source: newOrder.card,
+      type: "Debit",
+    });
     setOpenCreateDialog(false);
   };
 
@@ -160,16 +165,22 @@ const Order: React.FC = () => {
               setNewOrder({ ...newOrder, deviceName: e.target.value })
             }
           />
-          <TextField
-            margin="dense"
-            label="Platform"
-            fullWidth
-            required
-            value={newOrder.platform}
-            onChange={(e) =>
-              setNewOrder({ ...newOrder, platform: e.target.value })
-            }
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Platform</InputLabel>
+            <Select
+              value={newOrder.platform}
+              onChange={(e) =>
+                setNewOrder({
+                  ...newOrder,
+                  platform: e.target.value as string,
+                })
+              }
+            >
+              {PLATFORM.map((platform) => (
+                <MenuItem key={platform} value={platform}>{platform}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Oder ID"
@@ -180,14 +191,22 @@ const Order: React.FC = () => {
               setNewOrder({ ...newOrder, orderId: e.target.value })
             }
           />
-          <TextField
-            margin="dense"
-            label="Card Name"
-            fullWidth
-            required
-            value={newOrder.card}
-            onChange={(e) => setNewOrder({ ...newOrder, card: e.target.value })}
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Card Name</InputLabel>
+            <Select
+              value={newOrder.card}
+              onChange={(e) =>
+                setNewOrder({
+                  ...newOrder,
+                  card: e.target.value as string,
+                })
+              }
+            >
+              {CARDS.map((card) => (
+                <MenuItem key={card} value={card}>{card}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Quantity"
@@ -228,7 +247,7 @@ const Order: React.FC = () => {
           />
           <TextField
             margin="dense"
-            label="Return Amount"
+            label="Profit"
             type="number"
             fullWidth
             required
@@ -236,7 +255,7 @@ const Order: React.FC = () => {
             onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                returnAmount: parseInt(e.target.value) || 0,
+                returnAmount: parseInt(e.target.value) + newOrder.amountPaid || 0,
               })
             }
           />

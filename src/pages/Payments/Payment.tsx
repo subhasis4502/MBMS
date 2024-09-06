@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { usePaymentContext } from "../../contexts/PaymentContext";
-import { PaymentModel } from "../../types";
+import { BANKS, CARDS, PaymentModel, USERS } from "../../types";
 
 const Payment: React.FC = () => {
   const { payments, fetchPayments, addPayment, isLoading, error } =
@@ -130,17 +130,28 @@ const Payment: React.FC = () => {
       >
         <DialogTitle>Create New Payment</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Source"
-            fullWidth
-            required
-            value={newPayment.source}
-            onChange={(e) =>
-              setNewPayment({ ...newPayment, source: e.target.value })
-            }
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Source</InputLabel>
+            <Select
+              value={newPayment.source}
+              onChange={(e) =>
+                setNewPayment({
+                  ...newPayment,
+                  source: e.target.value as string,
+                })
+              }
+            >
+              {BANKS.map((bank) => (
+                <MenuItem key={bank} value={bank}>{bank}</MenuItem>
+              ))}
+              {CARDS.map((card) => (
+                <MenuItem key={card} value={card}>{card}</MenuItem>
+              ))}
+              {USERS.map((user) => (
+                <MenuItem key={user} value={user}>{user}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <FormControl fullWidth margin="dense">
             <InputLabel>Type</InputLabel>
             <Select
