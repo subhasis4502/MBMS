@@ -16,7 +16,15 @@ import { Link as RouterLink } from "react-router-dom";
 import { useUserContext } from "../../contexts/UserContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { Login, Logout } from "@mui/icons-material";
+import {
+  CreditCard,
+  Dashboard,
+  Home,
+  Login,
+  Logout,
+  Payments,
+  ShoppingCart,
+} from "@mui/icons-material";
 import { ListItemIcon } from "@mui/material";
 
 const Navbar: React.FC = () => {
@@ -39,6 +47,9 @@ const Navbar: React.FC = () => {
       <List>
         <ListItem disablePadding>
           <ListItemButton component={RouterLink} to="/">
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItemButton>
         </ListItem>
@@ -46,21 +57,33 @@ const Navbar: React.FC = () => {
           <>
             <ListItem disablePadding>
               <ListItemButton component={RouterLink} to="/dashboard">
+                <ListItemIcon>
+                  <Dashboard />
+                </ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton component={RouterLink} to="/orders">
+                <ListItemIcon>
+                  <ShoppingCart />
+                </ListItemIcon>
                 <ListItemText primary="Orders" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton component={RouterLink} to="/payments">
+                <ListItemIcon>
+                  <Payments />
+                </ListItemIcon>
                 <ListItemText primary="Payments" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton component={RouterLink} to="/cards">
+                <ListItemIcon>
+                  <CreditCard />
+                </ListItemIcon>
                 <ListItemText primary="Cards" />
               </ListItemButton>
             </ListItem>

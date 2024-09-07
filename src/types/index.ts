@@ -26,12 +26,21 @@ export interface OrderModel {
   platform: string;
   orderId: string;
   card: string;
+  cardName: string;
   quantity: number;
   pincode: string;
   amountPaid: number;
+  returnAmount: number;
   profit: number;
   doneBy: string;
-  delivery: 'Pending' | 'Shipped' | 'Delivered';
+  doneByUser: string;
+  orderDate: string;
+  cashBack: number;
+  commission: number;
+  deliveryDate: string;
+  totalProfit: number;
+  transfer: boolean;
+  delivery: 'Pending' | 'Delivered' | 'Money Received';
 }
 
 export interface PaymentModel {

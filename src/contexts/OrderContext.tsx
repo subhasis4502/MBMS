@@ -12,7 +12,22 @@ import { useUserContext } from "./UserContext";
 interface OrderContextType {
   orders: OrderModel[];
   fetchOrders: () => void;
-  addOrder: (order: Omit<OrderModel, "_id" | "delivery">) => void;
+  addOrder: (
+    order: Omit<
+      OrderModel,
+      | "_id"
+      | "delivery"
+      | "returnAmount"
+      | "orderDate"
+      | "cashBack"
+      | "commission"
+      | "deliveryDate"
+      | "totalProfit"
+      | "transfer"
+      | "doneByUser"
+      | "cardName"
+    >
+  ) => void;
   updateOrderStatus: (id: string, status: OrderModel["delivery"]) => void;
   deleteOrder: (id: string) => void;
   prevOrders: (orders: OrderModel[]) => void;
@@ -55,7 +70,22 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const addOrder = async (order: Omit<OrderModel, "_id" | "delivery">) => {
+  const addOrder = async (
+    order: Omit<
+      OrderModel,
+      | "_id"
+      | "delivery"
+      | "returnAmount"
+      | "orderDate"
+      | "cashBack"
+      | "commission"
+      | "deliveryDate"
+      | "totalProfit"
+      | "transfer"
+      | "doneByUser"
+      | "cardName"
+    >
+  ) => {
     try {
       const newOrder = await callApi({
         endpoint: "/orders",
@@ -77,7 +107,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
     try {
       debugger;
       const updatedOrder = await callApi({
-        endpoint: `/orders/${id}`,
+        endpoint: `/orders/delivery/${id}`,
         token: user?.token,
         requestType: "PUT",
         data: { delivery: status },

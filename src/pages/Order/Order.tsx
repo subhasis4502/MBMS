@@ -21,13 +21,14 @@ import {
   TableRow,
   Paper,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useUserContext } from "../../contexts/UserContext";
 import { usePaymentContext } from "../../contexts/PaymentContext";
-import { CARDS, PLATFORM } from "../../types";
+import { CARDS, OrderModel, PLATFORM } from "../../types";
 
 const Order: React.FC = () => {
   const { orders, fetchOrders, addOrder, updateOrderStatus, isLoading, error } =
@@ -36,6 +37,9 @@ const Order: React.FC = () => {
   const { user } = useUserContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [orderStatusFilter, setOrderStatusFilter] = useState<
+    "All" | "Pending" | "Delivered" | "Money Received"
+  >("Pending");
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [newOrder, setNewOrder] = useState({
     deviceName: "",
@@ -49,7 +53,7 @@ const Order: React.FC = () => {
     doneBy: "",
   });
   const [newStatus, setNewStatus] = useState<
-    "Pending" | "Shipped" | "Delivered"
+    "Pending" | "Delivered" | "Money Received"
   >("Delivered");
 
   const handleCreateOrder = async () => {
@@ -87,28 +91,52 @@ const Order: React.FC = () => {
     }
   };
 
+  const filteredOrders = orders.filter(
+    (order: OrderModel) =>
+      orderStatusFilter === "All" || order.delivery === orderStatusFilter
+  );
+
   useEffect(() => {
     fetchOrders();
   }, []);
 
   return (
     <Box sx={{ p: 3 }}>
+      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
       <Typography variant="h4" gutterBottom>
         Orders
       </Typography>
-      {error && (
-        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-          {error}
-        </Typography>
-      )}
       <Button
         variant="contained"
         startIcon={<AddIcon />}
         onClick={() => setOpenCreateDialog(true)}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, mr: 2 }}
       >
         Create Order
       </Button>
+
+      <FormControl sx={{ minWidth: 120 }}>
+        <InputLabel>Delivery Status Filter</InputLabel>
+        <Select
+          value={orderStatusFilter}
+          label="Filter"
+          sx={{ mb: 2 }}
+          onChange={(e) =>
+            setOrderStatusFilter(
+              e.target.value as
+                | "All"
+                | "Pending"
+                | "Delivered"
+                | "Money Received"
+            )
+          }
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Delivered">Delivered</MenuItem>
+          <MenuItem value="Money Received">Money Received</MenuItem>
+        </Select>
+      </FormControl>
 
       <TableContainer component={Paper}>
         <Table>
@@ -116,10 +144,20 @@ const Order: React.FC = () => {
             <TableRow>
               <TableCell>Device Name</TableCell>
               <TableCell>Platform</TableCell>
+              {user?.isAdmin && <TableCell>Order ID</TableCell>}
+              {user?.isAdmin && <TableCell>Card</TableCell>}
               <TableCell>Quantity</TableCell>
-              <TableCell>Delivery Status</TableCell>
-              <TableCell>Amount Paid</TableCell>
               <TableCell>Pincode</TableCell>
+              <TableCell>Amount Paid</TableCell>
+              {user?.isAdmin && <TableCell>Return Amount</TableCell>}
+              {user?.isAdmin && <TableCell>Done By</TableCell>}
+              {user?.isAdmin && <TableCell>Order Date</TableCell>}
+              {user?.isAdmin && <TableCell>Cashback</TableCell>}
+              {user?.isAdmin && <TableCell>Commision</TableCell>}
+              <TableCell>Delivery Status</TableCell>
+              {user?.isAdmin && <TableCell>Delivery Date</TableCell>}
+              {user?.isAdmin && <TableCell>Total Profit</TableCell>}
+              {user?.isAdmin && <TableCell>Profit Transferred</TableCell>}
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -134,14 +172,36 @@ const Order: React.FC = () => {
             </Box>
           ) : (
             <TableBody>
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell>{order.deviceName}</TableCell>
                   <TableCell>{order.platform}</TableCell>
+                  {user?.isAdmin && <TableCell>{order.orderId}</TableCell>}
+                  {user?.isAdmin && <TableCell>{order.cardName}</TableCell>}
                   <TableCell>{order.quantity}</TableCell>
-                  <TableCell>{order.delivery}</TableCell>
-                  <TableCell>{order.amountPaid}</TableCell>
                   <TableCell>{order.pincode}</TableCell>
+                  <TableCell>{order.amountPaid}</TableCell>
+                  {user?.isAdmin && <TableCell>{order.returnAmount}</TableCell>}
+                  {user?.isAdmin && <TableCell>{order.doneByUser}</TableCell>}
+                  {user?.isAdmin && (
+                    <TableCell>
+                      {new Date(order.orderDate).toLocaleDateString()}
+                    </TableCell>
+                  )}
+                  {user?.isAdmin && <TableCell>{order.cashBack}</TableCell>}
+                  {user?.isAdmin && <TableCell>{order.commission}</TableCell>}
+                  <TableCell>{order.delivery}</TableCell>
+                  {user?.isAdmin && (
+                    <TableCell>
+                      {order.deliveryDate
+                        ? new Date(order.deliveryDate).toLocaleDateString()
+                        : "N/A"}
+                    </TableCell>
+                  )}
+                  {user?.isAdmin && <TableCell>{order.profit}</TableCell>}
+                  {user?.isAdmin && (
+                    <TableCell>{order.transfer ? "Yes" : "No"}</TableCell>
+                  )}
                   <TableCell>
                     <Button
                       startIcon={<EditIcon />}
@@ -179,7 +239,7 @@ const Order: React.FC = () => {
               setNewOrder({ ...newOrder, deviceName: e.target.value })
             }
           />
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth margin="dense" required>
             <InputLabel>Platform</InputLabel>
             <Select
               value={newOrder.platform}
@@ -207,7 +267,7 @@ const Order: React.FC = () => {
               setNewOrder({ ...newOrder, orderId: e.target.value })
             }
           />
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth margin="dense" required>
             <InputLabel>Card Name</InputLabel>
             <Select
               value={newOrder.card}
@@ -235,7 +295,7 @@ const Order: React.FC = () => {
             onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                quantity: parseInt(e.target.value) || 0,
+                quantity: parseInt(e.target.value),
               })
             }
           />
@@ -259,7 +319,7 @@ const Order: React.FC = () => {
             onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                amountPaid: parseInt(e.target.value) || 0,
+                amountPaid: parseInt(e.target.value),
               })
             }
           />
@@ -297,13 +357,13 @@ const Order: React.FC = () => {
               value={newStatus}
               onChange={(e) =>
                 setNewStatus(
-                  e.target.value as "Pending" | "Shipped" | "Delivered"
+                  e.target.value as "Pending" | "Delivered" | "Money Received"
                 )
               }
             >
               <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Shipped">Shipped</MenuItem>
               <MenuItem value="Delivered">Delivered</MenuItem>
+              <MenuItem value="Money Received">Money Received</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
