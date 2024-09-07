@@ -20,6 +20,7 @@ import {
   TableRow,
   Paper,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { usePaymentContext } from "../../contexts/PaymentContext";
@@ -54,14 +55,10 @@ const Payment: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
       <Typography variant="h4" gutterBottom>
         Payments
       </Typography>
-      {error && (
-        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-          {error}
-        </Typography>
-      )}
       <Button
         variant="contained"
         startIcon={<AddIcon />}

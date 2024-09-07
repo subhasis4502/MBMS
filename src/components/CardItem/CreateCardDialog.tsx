@@ -14,15 +14,14 @@ import { CardModel as CreditCard } from '../../types';
 interface CreateCardDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (card: Omit<CreditCard, '_id'>) => void;
+  onSubmit: (card: Omit<CreditCard, '_id' | 'currentLimit'>) => void;
 }
 
 const CreateCardDialog: React.FC<CreateCardDialogProps> = ({ open, onClose, onSubmit }) => {
-  const [newCard, setNewCard] = useState<Omit<CreditCard, '_id'>>({
+  const [newCard, setNewCard] = useState<Omit<CreditCard, '_id' | 'currentLimit'>>({
     name: [''],
     type: '',
     totalLimit: 0,
-    currentLimit: 0,
     payments: [],
     billDate: new Date(),
     isActive: true,
@@ -56,14 +55,6 @@ const CreateCardDialog: React.FC<CreateCardDialogProps> = ({ open, onClose, onSu
           type="number"
           value={newCard.totalLimit}
           onChange={(e) => setNewCard({ ...newCard, totalLimit: Number(e.target.value) })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Current Limit"
-          type="number"
-          value={newCard.currentLimit}
-          onChange={(e) => setNewCard({ ...newCard, currentLimit: Number(e.target.value) })}
           fullWidth
           margin="normal"
         />

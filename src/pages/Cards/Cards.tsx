@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   Theme,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import CardItem from "../../components/CardItem/CardItem";
 import CreateCardDialog from "../../components/CardItem/CreateCardDialog";
@@ -43,16 +44,26 @@ const CardsPage: React.FC = () => {
     fetchCards();
   }, []);
 
-  const handleCreateCard = (newCard: Omit<CreditCard, "_id">) => {
-    // In a real application, you would send this to your backend
-    const cardWithId: CreditCard = { ...newCard, _id: Date.now().toString() };
-    setCards([...cards, cardWithId]);
+  const handleCreateCard = async (newCard: Omit<CreditCard, "_id" | "currentLimit" | "payments">) => {
+    try {
+      const newCrdeitCard = await callApi({
+        endpoint: "/cards",
+        token: user?.token,
+        requestType: "POST",
+        data: newCard,
+      })
+      setCards([...cards, newCrdeitCard]);
+    } catch (err) {
+      setError("Failed to create card. Please try again.");
+      console.error("Error adding card:", err);
+    }
   };
 
   const filteredCards = cards.filter(card => card.type.toLowerCase().includes('card'));
 
   return (
     <Box sx={{ p: isMobile ? 2 : 3 }}>
+      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
       <Typography variant="h4" gutterBottom>
         Cards
       </Typography>

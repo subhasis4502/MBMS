@@ -1,12 +1,19 @@
 import React from "react";
-import { Card, CardContent, Stack, Typography } from "@mui/material";
+import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { CardModel as CreditCard } from "../../types";
 
-const BlurredCard = styled(Card)<{ isActive: boolean }>(({ isActive }) => ({
-  filter: isActive ? "none" : "blur(4px) grayscale(100%)",
-  opacity: isActive ? 1 : 0.7,
-  transition: "filter 0.3s, opacity 0.3s",
+const StyledCard = styled(Card)(({ theme }) => ({
+  height: 224,
+  background: `linear-gradient(to bottom right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+  color: theme.palette.common.white,
+  borderRadius: theme.shape.borderRadius * 2,
+}));
+
+const CurrentLimit = styled(Typography)(({ theme }) => ({
+  fontSize: "1.5rem",
+  fontWeight: "bold",
+  // color: theme.palette.error.main,
 }));
 
 interface CardItemProps {
@@ -17,28 +24,39 @@ const CardItem: React.FC<CardItemProps> = ({ card }) => {
   return (
     <Stack spacing={2}>
       {card.name.map((cardName) => (
-        <BlurredCard isActive={card.isActive}>
-          <CardContent>
-            <Typography variant="h6" component="div" noWrap>
-              {cardName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Type: {card.type}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Total Limit: {card.totalLimit.toLocaleString()}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Current Limit: {card.currentLimit.toLocaleString()}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Bill Date: {new Date(card.billDate).toLocaleDateString()}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+        <StyledCard>
+          <CardContent
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                {cardName}
+              </Typography>
+              <Typography variant="body2">{card.type}</Typography>
+            </Box>
+            <Box>
+              <CurrentLimit gutterBottom>
+                ₹{card.currentLimit.toLocaleString()}
+              </CurrentLimit>
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="body2">
+                  Total: ₹{card.totalLimit.toLocaleString()}
+                </Typography>
+                <Typography variant="body2">
+                  Due: {new Date(card.billDate).toLocaleDateString()}
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="body2" alignSelf="flex-end">
               Status: {card.isActive ? "Active" : "Inactive"}
             </Typography>
           </CardContent>
-        </BlurredCard>
+        </StyledCard>
       ))}
     </Stack>
   );
