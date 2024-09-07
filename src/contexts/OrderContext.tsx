@@ -28,7 +28,7 @@ interface OrderContextType {
       | "cardName"
     >
   ) => void;
-  updateOrderStatus: (id: string, status: OrderModel["delivery"]) => void;
+  updateOrderStatus: (id: string, status: OrderModel["delivery"], newOrderId: string) => void;
   deleteOrder: (id: string) => void;
   prevOrders: (orders: OrderModel[]) => void;
   isLoading: boolean;
@@ -102,15 +102,15 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateOrderStatus = async (
     id: string,
-    status: OrderModel["delivery"]
+    status: OrderModel["delivery"],
+    newOrderId: string
   ) => {
     try {
-      debugger;
       const updatedOrder = await callApi({
         endpoint: `/orders/delivery/${id}`,
         token: user?.token,
         requestType: "PUT",
-        data: { delivery: status },
+        data: { delivery: status, orderId: newOrderId },
       });
       setOrders((prevOrders) =>
         prevOrders.map((order) =>

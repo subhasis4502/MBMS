@@ -52,6 +52,7 @@ const Order: React.FC = () => {
     profit: 0,
     doneBy: "",
   });
+  const [newOrderId, setNewOrderId] = useState("");
   const [newStatus, setNewStatus] = useState<
     "Pending" | "Delivered" | "Money Received"
   >("Delivered");
@@ -83,11 +84,11 @@ const Order: React.FC = () => {
   };
 
   const handleUpdateStatus = () => {
-    console.log(selectedOrder);
     if (selectedOrder) {
-      updateOrderStatus(selectedOrder, newStatus);
+      updateOrderStatus(selectedOrder, newStatus, newOrderId);
       setOpenUpdateDialog(false);
       setSelectedOrder(null);
+      setNewOrderId("");
     }
   };
 
@@ -102,7 +103,11 @@ const Order: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" onClose={() => {}}>
+          {error}
+        </Alert>
+      )}
       <Typography variant="h4" gutterBottom>
         Orders
       </Typography>
@@ -366,6 +371,16 @@ const Order: React.FC = () => {
               <MenuItem value="Money Received">Money Received</MenuItem>
             </Select>
           </FormControl>
+          {newStatus === "Pending" && (
+            <TextField
+              margin="dense"
+              label="Oder ID"
+              fullWidth
+              required
+              value={newOrderId}
+              onChange={(e) => setNewOrderId(e.target.value)}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenUpdateDialog(false)}>Cancel</Button>
