@@ -79,7 +79,7 @@ export const CARDS = [
 ]
 
 export const BANKS = [
-  "ICICI Savings A/c",
+  "ICICI Savings Account",
 ]
 
 export const USERS = [

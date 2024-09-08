@@ -37,12 +37,17 @@ const Payment: React.FC = () => {
   >({
     source: "",
     type: "Credit",
-    amount: 0
+    amount: 0,
   });
 
   const handleCreatePayment = async () => {
-    addPayment(newPayment);
+    await addPayment(newPayment);
     setOpenCreateDialog(false);
+    setNewPayment({
+      source: "",
+      type: "Credit",
+      amount: 0,
+    });
   };
 
   const filteredPayments = payments.filter(
@@ -55,7 +60,7 @@ const Payment: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
       <Typography variant="h4" gutterBottom>
         Payments
       </Typography>
@@ -139,13 +144,19 @@ const Payment: React.FC = () => {
               }
             >
               {BANKS.map((bank) => (
-                <MenuItem key={bank} value={bank}>{bank}</MenuItem>
+                <MenuItem key={bank} value={bank}>
+                  {bank}
+                </MenuItem>
               ))}
               {CARDS.map((card) => (
-                <MenuItem key={card} value={card}>{card}</MenuItem>
+                <MenuItem key={card} value={card}>
+                  {card}
+                </MenuItem>
               ))}
               {USERS.map((user) => (
-                <MenuItem key={user} value={user}>{user}</MenuItem>
+                <MenuItem key={user} value={user}>
+                  {user}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

@@ -1,14 +1,77 @@
 // src/pages/Dashboard/Dashboard.tsx
-import React from 'react';
-import { Box, Typography, Paper, Grid } from '@mui/material';
-import { useUserContext } from '../../contexts/UserContext';
+import React from "react";
+import { Box, Typography, Paper, Grid } from "@mui/material";
+import { useUserContext } from "../../contexts/UserContext";
+import DashboardCard from "../../components/DashboardCard/DashboardCard";
+import { DASHBOARD_CARDS, INITIAL_BALANCE } from "../../constants/constant";
+import { usePaymentContext } from "../../contexts/PaymentContext";
+import { useOrderContext } from "../../contexts/OrderContext";
+import { callApi } from "../../api/api";
+import { CardModel } from "../../types";
 
 const Dashboard: React.FC = () => {
   const { user } = useUserContext();
+  const { payments } = usePaymentContext();
+  const { orders } = useOrderContext();
 
   if (!user) {
     return <Typography>Please log in to view the dashboard.</Typography>;
   }
+
+  // Calculation for dashboard metrics
+  // Current balance: Initial balance + Total Amount receive in bank - Credit Card Payments
+  const currentBalance =
+    INITIAL_BALANCE +
+    payments
+      .filter(
+        (payment) =>
+          payment.source.includes("Savings") && payment.type === "Credit"
+      )
+      .reduce((sum, payment) => sum + payment.amount, 0) -
+    payments
+      .filter(
+        (payment) =>
+          !payment.source.includes("Savings") && payment.type === "Credit"
+      )
+      .reduce((sum, payment) => sum + payment.amount, 0);
+
+  // async function getTotalCreditUsed() {
+  //   try {
+  //     const cards = await callApi({ endpoint: "/cards", token: user?.token });
+  //     const totalCreditUsed = cards.reduce((total: number, card: CardModel) => {
+  //       return total + (card.totalLimit - card.currentLimit || 0);
+  //     }, 0);
+  //     return totalCreditUsed;
+  //   } catch (error) {
+  //     console.error("Error fetching card data:", error);
+  //     return -1;
+  //   }
+  // }
+
+  // const totalCreditUsed = getTotalCreditUsed();
+
+  // Money yet to receive
+  const moneyYetToReceive = orders
+    .filter((order) => order.delivery !== "Money Received")
+    .reduce((sum, payment) => sum + payment.returnAmount, 0);
+
+  // Total Profit
+  const totalTurnover = orders.reduce(
+    (sum, payment) => sum + payment.returnAmount,
+    0
+  );
+
+  // Total Profit
+  const totalProfit = orders
+    .filter((order) => order.doneByUser == user.name)
+    .reduce((sum, payment) => sum + payment.profit, 0);
+
+  // Realised Profit
+  const realisedProfit = orders
+    .filter((order) => order.delivery === "Money Received" && !order.transfer)
+    .reduce((sum, payment) => sum + payment.profit, 0);
+
+  const previousDue = 1000;
 
   return (
     <Box sx={{ flexGrow: 1, mt: 4 }}>
@@ -33,6 +96,28 @@ const Dashboard: React.FC = () => {
             <Typography>Last login: {new Date().toLocaleString()}</Typography>
             <Typography>Account status: Active</Typography>
           </Paper>
+        </Grid>
+        {user.isAdmin && (
+          <Grid item xs={12} md={6}>
+            <DashboardCard title={DASHBOARD_CARDS[0]} value={currentBalance} />
+          </Grid>
+        )}
+        <Grid item xs={12} md={6}>
+          <DashboardCard title={DASHBOARD_CARDS[1]} value={0} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <DashboardCard title={DASHBOARD_CARDS[2]} value={moneyYetToReceive} />
+        </Grid>
+        {user.isAdmin && (
+          <Grid item xs={12} md={6}>
+            <DashboardCard title={DASHBOARD_CARDS[3]} value={totalTurnover} />
+          </Grid>
+        )}
+        <Grid item xs={12} md={6}>
+          <DashboardCard title={DASHBOARD_CARDS[4]} value={totalProfit} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <DashboardCard title={DASHBOARD_CARDS[5]} value={realisedProfit} />
         </Grid>
       </Grid>
     </Box>
