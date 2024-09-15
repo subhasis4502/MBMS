@@ -1,5 +1,5 @@
 // src/App.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import {
@@ -7,6 +7,8 @@ import {
   Route,
   Routes,
   Navigate,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { UserProvider, useUserContext } from "./contexts/UserContext";
 import Layout from "./components/Layout/Layout";
@@ -26,9 +28,21 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
   children,
 }) => {
   const { user } = useUserContext();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      // Redirect to login if user is null, preserving the intended destination
+      navigate("/login", { state: { from: location.pathname }, replace: true });
+    }
+  }, [user, navigate, location]);
+
   if (!user) {
-    return <Navigate to="/login" replace />;
+    // Return null while the redirection is happening
+    return null;
   }
+
   return children;
 };
 
@@ -38,7 +52,14 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/cards" element={<CardsPage />} />
+      <Route
+        path="/cards"
+        element={
+          <ProtectedRoute>
+            <CardsPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={
