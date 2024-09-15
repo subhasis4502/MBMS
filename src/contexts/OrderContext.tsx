@@ -53,6 +53,10 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetchOrders();
+  }, [user]);
+
   const fetchOrders = async () => {
     try {
       setIsLoading(true);

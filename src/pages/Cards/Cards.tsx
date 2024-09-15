@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -13,57 +13,33 @@ import CardItem from "../../components/CardItem/CardItem";
 import CreateCardDialog from "../../components/CardItem/CreateCardDialog";
 import { CardModel as CreditCard } from "../../types";
 import { useUserContext } from "../../contexts/UserContext";
-import { callApi } from "../../api/api";
+import { useCardContext } from "../../contexts/CardContext";
 
 const CardsPage: React.FC = () => {
-  const [cards, setCards] = useState<CreditCard[]>([]);
+  const { cards, addCard, isLoading, error } = useCardContext();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useUserContext();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
 
-  useEffect(() => {
-    // Fetch cards data here
-    const fetchCards = async () => {
-      try {
-        setIsLoading(true);
-        const fetchedCards = await callApi({ endpoint: "/cards", token: user?.token});
-        setCards(fetchedCards);
-        setError(null);
-      } catch (err) {
-        setError("Failed to load cards. Please try again later.");
-        console.error("Error fetching cards:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCards();
-  }, []);
-
-  const handleCreateCard = async (newCard: Omit<CreditCard, "_id" | "currentLimit" | "payments">) => {
-    try {
-      const newCrdeitCard = await callApi({
-        endpoint: "/cards",
-        token: user?.token,
-        requestType: "POST",
-        data: newCard,
-      })
-      setCards([...cards, newCrdeitCard]);
-    } catch (err) {
-      setError("Failed to create card. Please try again.");
-      console.error("Error adding card:", err);
-    }
+  const handleCreateCard = async (
+    newCard: Omit<CreditCard, "_id" | "currentLimit" | "payments">
+  ) => {
+    await addCard(newCard);
   };
 
-  const filteredCards = cards.filter(card => card.type.toLowerCase().includes('card'));
+  const filteredCards = cards.filter((card) =>
+    card.type.toLowerCase().includes("card")
+  );
 
   return (
     <Box sx={{ p: isMobile ? 2 : 3 }}>
-      {error && <Alert severity="error" onClose={() => {}}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" onClose={() => {}}>
+          {error}
+        </Alert>
+      )}
       <Typography variant="h4" gutterBottom>
         Cards
       </Typography>

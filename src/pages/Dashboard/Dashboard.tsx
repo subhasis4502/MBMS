@@ -6,13 +6,13 @@ import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import { DASHBOARD_CARDS, INITIAL_BALANCE } from "../../constants/constant";
 import { usePaymentContext } from "../../contexts/PaymentContext";
 import { useOrderContext } from "../../contexts/OrderContext";
-import { callApi } from "../../api/api";
-import { CardModel } from "../../types";
+import { useCardContext } from "../../contexts/CardContext";
 
 const Dashboard: React.FC = () => {
   const { user } = useUserContext();
   const { payments } = usePaymentContext();
   const { orders } = useOrderContext();
+  const { cards } = useCardContext();
 
   if (!user) {
     return <Typography>Please log in to view the dashboard.</Typography>;
@@ -35,20 +35,10 @@ const Dashboard: React.FC = () => {
       )
       .reduce((sum, payment) => sum + payment.amount, 0);
 
-  // async function getTotalCreditUsed() {
-  //   try {
-  //     const cards = await callApi({ endpoint: "/cards", token: user?.token });
-  //     const totalCreditUsed = cards.reduce((total: number, card: CardModel) => {
-  //       return total + (card.totalLimit - card.currentLimit || 0);
-  //     }, 0);
-  //     return totalCreditUsed;
-  //   } catch (error) {
-  //     console.error("Error fetching card data:", error);
-  //     return -1;
-  //   }
-  // }
-
-  // const totalCreditUsed = getTotalCreditUsed();
+  // Total credit used
+  const totalCreditUsed = cards
+    .filter((card) => card.type.toLowerCase().includes("card"))
+    .reduce((sum, card) => sum + card.totalLimit - card.currentLimit, 0);
 
   // Money yet to receive
   const moneyYetToReceive = orders
@@ -103,7 +93,7 @@ const Dashboard: React.FC = () => {
           </Grid>
         )}
         <Grid item xs={12} md={6}>
-          <DashboardCard title={DASHBOARD_CARDS[1]} value={0} />
+          <DashboardCard title={DASHBOARD_CARDS[1]} value={totalCreditUsed} />
         </Grid>
         <Grid item xs={12} md={6}>
           <DashboardCard title={DASHBOARD_CARDS[2]} value={moneyYetToReceive} />

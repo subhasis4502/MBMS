@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -27,7 +27,7 @@ import { usePaymentContext } from "../../contexts/PaymentContext";
 import { BANKS, CARDS, PaymentModel, USERS } from "../../types";
 
 const Payment: React.FC = () => {
-  const { payments, fetchPayments, addPayment, isLoading, error } =
+  const { payments, addPayment, isLoading, error } =
     usePaymentContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [filter, setFilter] = useState<"all" | "Credit" | "Debit">("all");
@@ -53,10 +53,6 @@ const Payment: React.FC = () => {
   const filteredPayments = payments.filter(
     (payment: PaymentModel) => filter === "all" || payment.type === filter
   );
-
-  useEffect(() => {
-    fetchPayments();
-  }, []);
 
   return (
     <Box sx={{ p: 3 }}>

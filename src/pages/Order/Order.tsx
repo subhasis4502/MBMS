@@ -1,5 +1,5 @@
 // src/pages/Order/Order.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -31,7 +31,7 @@ import { usePaymentContext } from "../../contexts/PaymentContext";
 import { CARDS, OrderModel, PLATFORM } from "../../types";
 
 const Order: React.FC = () => {
-  const { orders, fetchOrders, addOrder, updateOrderStatus, isLoading, error } =
+  const { orders, addOrder, updateOrderStatus, isLoading, error } =
     useOrderContext();
   const { addPayment } = usePaymentContext();
   const { user } = useUserContext();
@@ -96,10 +96,6 @@ const Order: React.FC = () => {
     (order: OrderModel) =>
       orderStatusFilter === "All" || order.delivery === orderStatusFilter
   );
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   return (
     <Box sx={{ p: 3 }}>

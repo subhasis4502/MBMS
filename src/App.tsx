@@ -20,6 +20,7 @@ import { OrderProvider } from "./contexts/OrderContext";
 import CardsPage from "./pages/Cards/Cards";
 import { PaymentProvider } from "./contexts/PaymentContext";
 import Payment from "./pages/Payments/Payment";
+import { CardProvider } from "./contexts/CardContext";
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
   children,
@@ -71,14 +72,16 @@ const App: React.FC = () => {
     <UserProvider>
       <OrderProvider>
         <PaymentProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Router>
-              <Layout>
-                <AppRoutes />
-              </Layout>
-            </Router>
-          </ThemeProvider>
+          <CardProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Router>
+                <Layout>
+                  <AppRoutes />
+                </Layout>
+              </Router>
+            </ThemeProvider>
+          </CardProvider>
         </PaymentProvider>
       </OrderProvider>
     </UserProvider>

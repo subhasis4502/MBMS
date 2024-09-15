@@ -38,6 +38,10 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetchPayments();
+  }, [user]);
+
   const fetchPayments = async () => {
     try {
       setIsLoading(true);
