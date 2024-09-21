@@ -23,6 +23,8 @@ import CardsPage from "./pages/Cards/Cards";
 import { PaymentProvider } from "./contexts/PaymentContext";
 import Payment from "./pages/Payments/Payment";
 import { CardProvider } from "./contexts/CardContext";
+import HisabsPage from "./pages/Hisabs/Hisabs";
+import { HisabProvider } from "./contexts/HisabContext";
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
   children,
@@ -84,6 +86,14 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/hisabs"
+        element={
+          <ProtectedRoute>
+            <HisabsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };
@@ -94,14 +104,16 @@ const App: React.FC = () => {
       <OrderProvider>
         <PaymentProvider>
           <CardProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Router>
-                <Layout>
-                  <AppRoutes />
-                </Layout>
-              </Router>
-            </ThemeProvider>
+            <HisabProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Router>
+                  <Layout>
+                    <AppRoutes />
+                  </Layout>
+                </Router>
+              </ThemeProvider>
+            </HisabProvider>
           </CardProvider>
         </PaymentProvider>
       </OrderProvider>

@@ -40,7 +40,7 @@ export interface OrderModel {
   deliveryDate: string;
   totalProfit: number;
   transfer: boolean;
-  delivery: 'Pending' | 'Delivered' | 'Money Received';
+  delivery: 'Pending' | 'Delivered' | 'Payment Pending' | 'Money Received';
 }
 
 export interface PaymentModel {
@@ -50,6 +50,14 @@ export interface PaymentModel {
   amount: number;
   date: string;
   status: 'Pending' | 'Completed' | 'Failed';
+}
+
+export interface HisabModel {
+  _id: string;
+  title: string;
+  details: string;
+  isActive: boolean;
+  paymentReceived: boolean; 
 }
 
 export const PLATFORM = [

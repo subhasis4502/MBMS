@@ -17,6 +17,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import {
+  AccountBalance,
   CreditCard,
   Dashboard,
   Home,
@@ -87,6 +88,14 @@ const Navbar: React.FC = () => {
                 <ListItemText primary="Cards" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={RouterLink} to="/hisabs">
+                <ListItemIcon>
+                  <AccountBalance />
+                </ListItemIcon>
+                <ListItemText primary="Hisabs" />
+              </ListItemButton>
+            </ListItem>
           </>
         )}
       </List>
@@ -133,6 +142,9 @@ const Navbar: React.FC = () => {
                 </Button>
                 <Button color="inherit" component={RouterLink} to="/cards">
                   Cards
+                </Button>
+                <Button color="inherit" component={RouterLink} to="/hisabs">
+                  Hisabs
                 </Button>
               </>
             )}

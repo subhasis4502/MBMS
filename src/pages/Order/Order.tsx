@@ -38,7 +38,7 @@ const Order: React.FC = () => {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState<
-    "All" | "Pending" | "Delivered" | "Money Received"
+    "All" | "Pending" | "Delivered" | "Payment Pending" | "Money Received"
   >("Pending");
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [newOrder, setNewOrder] = useState({
@@ -54,7 +54,7 @@ const Order: React.FC = () => {
   });
   const [newOrderId, setNewOrderId] = useState("");
   const [newStatus, setNewStatus] = useState<
-    "Pending" | "Delivered" | "Money Received"
+    "Pending" | "Delivered" | "Payment Pending" | "Money Received"
   >("Delivered");
 
   const handleCreateOrder = async () => {
@@ -128,6 +128,7 @@ const Order: React.FC = () => {
                 | "All"
                 | "Pending"
                 | "Delivered"
+                | "Payment Pending"
                 | "Money Received"
             )
           }
@@ -135,6 +136,7 @@ const Order: React.FC = () => {
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="Pending">Pending</MenuItem>
           <MenuItem value="Delivered">Delivered</MenuItem>
+          <MenuItem value="Payment Pending">Payment Pending</MenuItem>
           <MenuItem value="Money Received">Money Received</MenuItem>
         </Select>
       </FormControl>
@@ -358,16 +360,17 @@ const Order: React.FC = () => {
               value={newStatus}
               onChange={(e) =>
                 setNewStatus(
-                  e.target.value as "Pending" | "Delivered" | "Money Received"
+                  e.target.value as "Pending" | "Delivered" | "Payment Pending" | "Money Received"
                 )
               }
             >
               <MenuItem value="Pending">Pending</MenuItem>
               <MenuItem value="Delivered">Delivered</MenuItem>
+              <MenuItem value="Payment Pending">Payment Pending</MenuItem>
               <MenuItem value="Money Received">Money Received</MenuItem>
             </Select>
           </FormControl>
-          {newStatus === "Pending" && (
+          {newStatus === "Delivered" && (
             <TextField
               margin="dense"
               label="Oder ID"
