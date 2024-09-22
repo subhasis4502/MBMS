@@ -14,25 +14,25 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
-import CreateCardDialog from "../../components/CardItem/CreateCardDialog";
 import { useUserContext } from "../../contexts/UserContext";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useHisabContext } from "../../contexts/HisabContext";
-import { HisabModel } from "../../types";
+import { HisabModel, OrderModel } from "../../types";
 
 const HisabsPage: React.FC = () => {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isMoreDialogOpen, setIsMoreDialogOpen] = useState(false);
+  const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [hisabText, setHisabText] = useState("");
+
   const [selectedHisab, setSelectedHisab] = useState<HisabModel | null>(null);
-  const { hisabs, addHisab, updateHisab, isLoading, error } = useHisabContext();
+  const { hisabs, fetchHisabs, addHisab, updateHisab, isLoading, error } = useHisabContext();
   const { user } = useUserContext();
-  const { orders, updateOrderStatus } = useOrderContext();
+  const { orders, fetchOrders, updateOrderStatus } = useOrderContext();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-
-  const deliveredOrders = orders.filter(
-    (order) => order.delivery === "Delivered"
+  const [deliveredOrders, setDeliveredOrders] = useState<OrderModel[]>(
+    orders.filter((order) => order.delivery === "Delivered")
   );
 
   const prepareHisab = () => {
@@ -60,14 +60,23 @@ const HisabsPage: React.FC = () => {
         Total Balance: ${previousDue} + ${paymentDetails} = ${totalBalance}
         `
     );
-    console.log(hisabText);
+    setIsSubmitDialogOpen(true);
   };
 
   const submitHisab = async () => {
-    await prepareHisab();
+    // Generate title with today's date and value-item count
+    const today = new Date();
+    const dateString = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    const itemCount = deliveredOrders.length;
+    const totalValue = deliveredOrders.reduce(
+      (sum, order) => sum + order.returnAmount,
+      0
+    );
+
+    const title = `${dateString}_${totalValue.toFixed(2)}_${itemCount}`;
     // Save to DB
     addHisab({
-      title: "Test",
+      title,
       details: hisabText,
     });
 
@@ -75,9 +84,16 @@ const HisabsPage: React.FC = () => {
     deliveredOrders.forEach((order) =>
       updateOrderStatus(order._id, "Payment Pending")
     );
+
+    await fetchOrders();
+    setIsSubmitDialogOpen(false);
+    setHisabText("");
+    setDeliveredOrders(
+      orders.filter((order) => order.delivery === "Delivered")
+    );
   };
 
-  const revertHisab = () => {
+  const revertHisab = async () => {
     // Make the hisab inactive
     if (selectedHisab) {
       updateHisab(selectedHisab._id, { isActive: false });
@@ -87,11 +103,17 @@ const HisabsPage: React.FC = () => {
         updateOrderStatus(order._id, "Delivered")
       );
 
-      setIsCreateDialogOpen(false);
+      await fetchHisabs();
+      await fetchOrders();
+      setIsMoreDialogOpen(false);
+      setHisabText("");
+      setDeliveredOrders(
+        orders.filter((order) => order.delivery === "Delivered")
+      );
     }
   };
 
-  const paymentCompleted = () => {
+  const paymentCompleted = async () => {
     // Update the hisab
     if (selectedHisab) {
       updateHisab(selectedHisab._id, { paymentReceived: true });
@@ -101,7 +123,9 @@ const HisabsPage: React.FC = () => {
         updateOrderStatus(order._id, "Money Received")
       );
 
-      setIsCreateDialogOpen(false);
+      setIsMoreDialogOpen(false);
+      setHisabText("");
+      await fetchOrders();
     }
   };
 
@@ -115,11 +139,11 @@ const HisabsPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Hisab
       </Typography>
-      {user?.isAdmin && (
+      {user?.isAdmin && deliveredOrders.length > 0 && (
         <Button
           variant="contained"
           color="primary"
-          onClick={() => submitHisab()}
+          onClick={prepareHisab}
           sx={{ mb: 2 }}
           fullWidth={isMobile}
         >
@@ -159,13 +183,14 @@ const HisabsPage: React.FC = () => {
                   <Box mt={2}>
                     <Button
                       variant="contained"
+                      disabled={hisab.paymentReceived}
                       color="primary"
                       onClick={() => {
-                        setIsCreateDialogOpen(true);
+                        setIsMoreDialogOpen(true);
                         setSelectedHisab(hisab);
                       }}
                     >
-                      More Details
+                      More Actions
                     </Button>
                   </Box>
                 </CardContent>
@@ -175,9 +200,10 @@ const HisabsPage: React.FC = () => {
         </Grid>
       )}
 
+      {/* More actions dialog */}
       <Dialog
-        open={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
+        open={isMoreDialogOpen}
+        onClose={() => setIsMoreDialogOpen(false)}
       >
         <DialogContent>
           <Typography
@@ -195,8 +221,31 @@ const HisabsPage: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={revertHisab}>Revert</Button>
-          <Button onClick={submitHisab}>Submit</Button>
           <Button onClick={paymentCompleted}>Payment Done</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Submit Hisab dialog */}
+      <Dialog
+        open={isSubmitDialogOpen}
+        onClose={() => setIsSubmitDialogOpen(false)}
+      >
+        <DialogContent>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              whiteSpace: "pre-line",
+              maxHeight: "150px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {hisabText}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={submitHisab}>Submit</Button>
         </DialogActions>
       </Dialog>
     </Box>
