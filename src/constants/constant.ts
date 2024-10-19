@@ -5,7 +5,8 @@ export const DASHBOARD_CARDS = [
     "Total Turnover",
     "Total Profit",
     "Realised Profit",
-    "Transfer Profit"
+    "Transfer Profit",
+    "Previous Due"
 ]
 
 export const INITIAL_BALANCE = 100000;

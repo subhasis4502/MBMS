@@ -18,6 +18,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useHisabContext } from "../../contexts/HisabContext";
 import { HisabModel, OrderModel } from "../../types";
+import { usePaymentContext } from "../../contexts/PaymentContext";
 
 const HisabsPage: React.FC = () => {
   const [isMoreDialogOpen, setIsMoreDialogOpen] = useState(false);
@@ -25,8 +26,10 @@ const HisabsPage: React.FC = () => {
   const [hisabText, setHisabText] = useState("");
 
   const [selectedHisab, setSelectedHisab] = useState<HisabModel | null>(null);
-  const { hisabs, fetchHisabs, addHisab, updateHisab, isLoading, error } = useHisabContext();
+  const { hisabs, fetchHisabs, addHisab, updateHisab, isLoading, error } =
+    useHisabContext();
   const { user } = useUserContext();
+  const { payments } = usePaymentContext();
   const { orders, fetchOrders, updateOrderStatus } = useOrderContext();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -35,8 +38,9 @@ const HisabsPage: React.FC = () => {
     orders.filter((order) => order.delivery === "Delivered")
   );
 
+  const previousDue = hisabs[0].totalAmount - payments[0].amount;
+
   const prepareHisab = () => {
-    const previousDue = 0;
     const totalBalance =
       previousDue +
       deliveredOrders.reduce((sum, order) => sum + order.returnAmount, 0);
@@ -68,16 +72,16 @@ const HisabsPage: React.FC = () => {
     const today = new Date();
     const dateString = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
     const itemCount = deliveredOrders.length;
-    const totalValue = deliveredOrders.reduce(
-      (sum, order) => sum + order.returnAmount,
-      0
-    );
+    const totalValue =
+      previousDue +
+      deliveredOrders.reduce((sum, order) => sum + order.returnAmount, 0);
 
     const title = `${dateString}_${totalValue.toFixed(2)}_${itemCount}`;
     // Save to DB
     addHisab({
       title,
       details: hisabText,
+      totalAmount: totalValue,
     });
 
     // Update the order status to 'Payment Pending'
@@ -173,8 +177,6 @@ const HisabsPage: React.FC = () => {
                     color="text.secondary"
                     sx={{
                       whiteSpace: "pre-line",
-                      maxHeight: "150px",
-                      overflow: "hidden",
                       textOverflow: "ellipsis",
                     }}
                   >
@@ -237,7 +239,7 @@ const HisabsPage: React.FC = () => {
             sx={{
               whiteSpace: "pre-line",
               maxHeight: "150px",
-              overflow: "hidden",
+              overflow: "auto",
               textOverflow: "ellipsis",
             }}
           >

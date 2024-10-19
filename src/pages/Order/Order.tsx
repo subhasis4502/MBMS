@@ -360,7 +360,11 @@ const Order: React.FC = () => {
               value={newStatus}
               onChange={(e) =>
                 setNewStatus(
-                  e.target.value as "Pending" | "Delivered" | "Payment Pending" | "Money Received"
+                  e.target.value as
+                    | "Pending"
+                    | "Delivered"
+                    | "Payment Pending"
+                    | "Money Received"
                 )
               }
             >

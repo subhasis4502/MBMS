@@ -56,6 +56,7 @@ export interface HisabModel {
   _id: string;
   title: string;
   details: string;
+  totalAmount: number;
   isActive: boolean;
   paymentReceived: boolean; 
 }

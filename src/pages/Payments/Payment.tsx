@@ -27,8 +27,7 @@ import { usePaymentContext } from "../../contexts/PaymentContext";
 import { BANKS, CARDS, PaymentModel, USERS } from "../../types";
 
 const Payment: React.FC = () => {
-  const { payments, addPayment, isLoading, error } =
-    usePaymentContext();
+  const { payments, addPayment, isLoading, error } = usePaymentContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [filter, setFilter] = useState<"all" | "Credit" | "Debit">("all");
 

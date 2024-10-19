@@ -7,12 +7,14 @@ import { DASHBOARD_CARDS, INITIAL_BALANCE } from "../../constants/constant";
 import { usePaymentContext } from "../../contexts/PaymentContext";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useCardContext } from "../../contexts/CardContext";
+import { useHisabContext } from "../../contexts/HisabContext";
 
 const Dashboard: React.FC = () => {
   const { user } = useUserContext();
   const { payments } = usePaymentContext();
   const { orders } = useOrderContext();
   const { cards } = useCardContext();
+  const { hisabs } = useHisabContext();
 
   if (!user) {
     return <Typography>Please log in to view the dashboard.</Typography>;
@@ -45,23 +47,27 @@ const Dashboard: React.FC = () => {
     .filter((order) => order.delivery !== "Money Received")
     .reduce((sum, payment) => sum + payment.returnAmount, 0);
 
-  // Total Profit
+  // Total turn over
   const totalTurnover = orders.reduce(
-    (sum, payment) => sum + payment.returnAmount,
+    (sum, payment) => sum + payment.amountPaid,
     0
   );
 
   // Total Profit
-  const totalProfit = orders
-    .filter((order) => order.doneByUser == user.name)
-    .reduce((sum, payment) => sum + payment.profit, 0);
+  const totalProfit = user.isAdmin
+    ? orders
+        .reduce((sum, payment) => sum + payment.profit, 0)
+    : orders
+        .filter((order) => order.doneByUser == user.name)
+        .reduce((sum, payment) => sum + payment.profit, 0);
 
   // Realised Profit
   const realisedProfit = orders
     .filter((order) => order.delivery === "Money Received" && !order.transfer)
     .reduce((sum, payment) => sum + payment.profit, 0);
 
-  const previousDue = 1000;
+  // Previos due
+  const previousDue = hisabs[0].totalAmount - payments[0].amount;
 
   return (
     <Box sx={{ flexGrow: 1, mt: 4 }}>
@@ -101,6 +107,11 @@ const Dashboard: React.FC = () => {
         {user.isAdmin && (
           <Grid item xs={12} md={6}>
             <DashboardCard title={DASHBOARD_CARDS[3]} value={totalTurnover} />
+          </Grid>
+        )}
+        {user.isAdmin && (
+          <Grid item xs={12} md={6}>
+            <DashboardCard title={DASHBOARD_CARDS[7]} value={previousDue} />
           </Grid>
         )}
         <Grid item xs={12} md={6}>
