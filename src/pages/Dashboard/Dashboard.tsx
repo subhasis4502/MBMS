@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
     .reduce((sum, payment) => sum + payment.profit, 0);
 
   // Previos due
-  const previousDue = hisabs[0].totalAmount - payments[0].amount;
+  const previousDue = hisabs[0]?.totalAmount - payments[0]?.amount;
 
   return (
     <Box sx={{ flexGrow: 1, mt: 4 }}>
