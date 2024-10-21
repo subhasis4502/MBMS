@@ -25,9 +25,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { usePaymentContext } from "../../contexts/PaymentContext";
 import { BANKS, CARDS, PaymentModel, USERS } from "../../types";
+import { useCardContext } from "../../contexts/CardContext";
 
 const Payment: React.FC = () => {
-  const { payments, fetchPayments, addPayment, isLoading, error } = usePaymentContext();
+  const { payments, fetchPayments, addPayment, isLoading, error } =
+    usePaymentContext();
+  const { cards } = useCardContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [filter, setFilter] = useState<"all" | "Credit" | "Debit">("all");
 
@@ -147,11 +150,14 @@ const Payment: React.FC = () => {
                   {bank}
                 </MenuItem>
               ))}
-              {CARDS.map((card) => (
-                <MenuItem key={card} value={card}>
-                  {card}
-                </MenuItem>
-              ))}
+              {cards.map((card) =>
+                card.name.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))
+              )}
+
               {USERS.map((user) => (
                 <MenuItem key={user} value={user}>
                   {user}

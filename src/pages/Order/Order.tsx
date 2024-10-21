@@ -29,12 +29,14 @@ import { useOrderContext } from "../../contexts/OrderContext";
 import { useUserContext } from "../../contexts/UserContext";
 import { usePaymentContext } from "../../contexts/PaymentContext";
 import { CARDS, OrderModel, PLATFORM } from "../../types";
+import { useCardContext } from "../../contexts/CardContext";
 
 const Order: React.FC = () => {
   const { orders, fetchOrders, addOrder, updateOrderStatus, isLoading, error } =
     useOrderContext();
   const { addPayment } = usePaymentContext();
   const { user } = useUserContext();
+  const { cards } = useCardContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState<
@@ -285,11 +287,13 @@ const Order: React.FC = () => {
                 })
               }
             >
-              {CARDS.map((card) => (
-                <MenuItem key={card} value={card}>
-                  {card}
-                </MenuItem>
-              ))}
+              {cards.map((card) =>
+                card.name.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))
+              )}
             </Select>
           </FormControl>
           <TextField
@@ -340,7 +344,7 @@ const Order: React.FC = () => {
             onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                profit: parseInt(e.target.value) || 0,
+                profit: parseInt(e.target.value),
               })
             }
           />
