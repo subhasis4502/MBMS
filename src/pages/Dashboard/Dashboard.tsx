@@ -42,14 +42,15 @@ const Dashboard: React.FC = () => {
     .filter((card) => card.type.toLowerCase().includes("card"))
     .reduce((sum, card) => sum + card.totalLimit - card.currentLimit, 0);
 
-  
   // Previos due
   const previousDue = hisabs[0]?.totalAmount - payments[0]?.amount;
 
   // Money yet to receive
-  const moneyYetToReceive = previousDue + orders
-    .filter((order) => order.delivery !== "Money Received")
-    .reduce((sum, payment) => sum + payment.returnAmount, 0);
+  const moneyYetToReceive =
+    previousDue +
+    orders
+      .filter((order) => order.delivery !== "Money Received")
+      .reduce((sum, payment) => sum + payment.returnAmount, 0);
 
   // Total turn over
   const totalTurnover = orders.reduce(
@@ -59,16 +60,26 @@ const Dashboard: React.FC = () => {
 
   // Total Profit
   const totalProfit = user.isAdmin
-    ? orders
-        .reduce((sum, payment) => sum + payment.profit, 0)
+    ? orders.reduce((sum, payment) => sum + payment.profit, 0)
     : orders
         .filter((order) => order.doneByUser == user.name)
         .reduce((sum, payment) => sum + payment.profit, 0);
 
   // Realised Profit
-  const realisedProfit = orders
-    .filter((order) => order.delivery === "Money Received" && !order.transfer)
-    .reduce((sum, payment) => sum + payment.profit, 0)
+  const realisedProfit = user.isAdmin
+    ? orders
+        .filter(
+          (order) => order.delivery === "Money Received" && !order.transfer
+        )
+        .reduce((sum, payment) => sum + payment.profit, 0)
+    : orders
+        .filter(
+          (order) =>
+            order.doneByUser === user.name &&
+            order.delivery === "Money Received" &&
+            !order.transfer
+        )
+        .reduce((sum, payment) => sum + payment.profit, 0);
 
   return (
     <Box sx={{ flexGrow: 1, mt: 4 }}>
