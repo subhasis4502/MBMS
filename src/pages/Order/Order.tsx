@@ -191,7 +191,7 @@ const Order: React.FC = () => {
                   <TableCell>{order.pincode}</TableCell>
                   <TableCell>{order.amountPaid}</TableCell>
                   {user?.isAdmin && <TableCell>{order.returnAmount}</TableCell>}
-                  {user?.isAdmin && <TableCell>{order.doneByUser}</TableCell>}
+                  <TableCell>{order.doneByUser}</TableCell>
                   {user?.isAdmin && (
                     <TableCell>
                       {new Date(order.orderDate).toLocaleDateString()}
@@ -207,7 +207,7 @@ const Order: React.FC = () => {
                         : "N/A"}
                     </TableCell>
                   )}
-                  {user?.isAdmin && <TableCell>{order.profit}</TableCell>}
+                  <TableCell>{order.profit}</TableCell>
                   {user?.isAdmin && (
                     <TableCell>{order.transfer ? "Yes" : "No"}</TableCell>
                   )}
