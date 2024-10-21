@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
     .reduce((sum, card) => sum + card.totalLimit - card.currentLimit, 0);
 
   // Previos due
-  const previousDue = hisabs[0]?.totalAmount - payments[0]?.amount;
+  const previousDue = hisabs[0]?.totalAmount - (payments.filter(payment => payment.source === "ICICI Savings Account" && payment.type === "Credit")[0]?.amount || 0);
 
   // Money yet to receive
   const moneyYetToReceive =
