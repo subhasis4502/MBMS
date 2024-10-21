@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -27,9 +27,13 @@ import { usePaymentContext } from "../../contexts/PaymentContext";
 import { BANKS, CARDS, PaymentModel, USERS } from "../../types";
 
 const Payment: React.FC = () => {
-  const { payments, addPayment, isLoading, error } = usePaymentContext();
+  const { payments, fetchPayments, addPayment, isLoading, error } = usePaymentContext();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [filter, setFilter] = useState<"all" | "Credit" | "Debit">("all");
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
 
   const [newPayment, setNewPayment] = useState<
     Omit<PaymentModel, "_id" | "date" | "status">

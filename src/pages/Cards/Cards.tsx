@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -16,7 +16,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import { useCardContext } from "../../contexts/CardContext";
 
 const CardsPage: React.FC = () => {
-  const { cards, addCard, isLoading, error } = useCardContext();
+  const { cards, fetchCards, addCard, isLoading, error } = useCardContext();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { user } = useUserContext();
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -32,6 +32,10 @@ const CardsPage: React.FC = () => {
   const filteredCards = cards.filter((card) =>
     card.type.toLowerCase().includes("card")
   );
+
+  useEffect(() => {
+    fetchCards();
+  }, []);
 
   return (
     <Box sx={{ p: isMobile ? 2 : 3 }}>
