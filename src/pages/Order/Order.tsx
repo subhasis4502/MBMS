@@ -42,6 +42,9 @@ const Order: React.FC = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState<
     "All" | "Pending" | "Delivered" | "Payment Pending" | "Money Received"
   >("Pending");
+  const [userFilter, setUserFilter] = useState<
+    "All" | "Subhasis Das" | "Shreyashee Mitra"
+  >("All")
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [newOrder, setNewOrder] = useState({
     deviceName: "",
@@ -100,7 +103,8 @@ const Order: React.FC = () => {
 
   const filteredOrders = orders.filter(
     (order: OrderModel) =>
-      orderStatusFilter === "All" || order.delivery === orderStatusFilter
+      (orderStatusFilter === "All" || order.delivery === orderStatusFilter) &&
+      (userFilter === "All" || order.doneByUser === userFilter)
   );
 
   return (
@@ -127,7 +131,7 @@ const Order: React.FC = () => {
         <Select
           value={orderStatusFilter}
           label="Filter"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, mr: 2 }}
           onChange={(e) =>
             setOrderStatusFilter(
               e.target.value as
@@ -144,6 +148,27 @@ const Order: React.FC = () => {
           <MenuItem value="Delivered">Delivered</MenuItem>
           <MenuItem value="Payment Pending">Payment Pending</MenuItem>
           <MenuItem value="Money Received">Money Received</MenuItem>
+        </Select>
+      </FormControl>
+
+      <FormControl sx={{ minWidth: 120 }}>
+        <InputLabel>User Filter</InputLabel>
+        <Select
+          value={userFilter}
+          label="Filter"
+          sx={{ mb: 2, mr: 2 }}
+          onChange={(e) =>
+            setUserFilter(
+              e.target.value as
+                | "All"
+                | "Subhasis Das"
+                | "Shreyashee Mitra"
+            )
+          }
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Subhasis Das">Subhasis Das</MenuItem>
+          <MenuItem value="Shreyashee Mitra">Shreyashee Mitra</MenuItem>
         </Select>
       </FormControl>
 
