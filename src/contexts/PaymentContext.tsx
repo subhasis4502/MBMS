@@ -11,7 +11,7 @@ import { useUserContext } from "./UserContext";
 
 interface PaymentContextType {
   payments: PaymentModel[];
-  lastPayment: PaymentModel[];
+  lastPayment: PaymentModel | null;
   fetchPayments: () => void;
   fetchLastPayment: () => void;
   addPayment: (payment: Omit<PaymentModel, "_id" | "date" | "status">) => void;
@@ -37,12 +37,13 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { user } = useUserContext();
   const [payments, setPayments] = useState<PaymentModel[]>([]);
-  const [lastPayment, setLastPayment] = useState<PaymentModel[]>([]);
+  const [lastPayment, setLastPayment] = useState<PaymentModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPayments();
+    fetchLastPayment();
   }, [user]);
 
   const fetchPayments = async () => {
@@ -62,7 +63,7 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
   const fetchLastPayment = async () => {
     try {
       const lastPayment = await callApi({ endpoint: "/payments/last", token: user?.token });
-      setLastPayment([lastPayment]);
+      setLastPayment(lastPayment);
       setError(null);
     } catch (err) {
       setError("Failed to fetch last payment. Please try again later.");

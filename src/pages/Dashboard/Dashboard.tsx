@@ -11,7 +11,7 @@ import { useHisabContext } from "../../contexts/HisabContext";
 
 const Dashboard: React.FC = () => {
   const { user } = useUserContext();
-  const { payments } = usePaymentContext();
+  const { payments, lastPayment } = usePaymentContext();
   const { orders } = useOrderContext();
   const { cards } = useCardContext();
   const { hisabs } = useHisabContext();
@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
     .reduce((sum, card) => sum + card.totalLimit - card.currentLimit, 0);
 
   // Previos due
-  const previousDue = hisabs[0]?.totalAmount - (payments.filter(payment => payment.source === "ICICI Savings Account" && payment.type === "Credit")[0]?.amount || 0);
+  const previousDue = hisabs[0]?.totalAmount - (lastPayment?.amount || 0);
 
   // Money yet to receive
   const moneyYetToReceive =

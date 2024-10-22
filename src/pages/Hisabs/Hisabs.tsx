@@ -29,7 +29,7 @@ const HisabsPage: React.FC = () => {
   const { hisabs, fetchHisabs, addHisab, updateHisab, isLoading, error } =
     useHisabContext();
   const { user } = useUserContext();
-  const { payments } = usePaymentContext();
+  const { lastPayment } = usePaymentContext();
   const { orders, fetchOrders, updateOrderStatus } = useOrderContext();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -38,7 +38,7 @@ const HisabsPage: React.FC = () => {
     orders.filter((order) => order.delivery === "Delivered")
   );
 
-  const previousDue = hisabs[0].totalAmount - payments[0].amount;
+  const previousDue = hisabs[0]?.totalAmount - (lastPayment?.amount || 0);
 
   const prepareHisab = () => {
     const totalBalance =
