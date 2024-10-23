@@ -1,5 +1,5 @@
 // src/pages/Dashboard/Dashboard.tsx
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Paper, Grid } from "@mui/material";
 import { useUserContext } from "../../contexts/UserContext";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
@@ -8,6 +8,7 @@ import { usePaymentContext } from "../../contexts/PaymentContext";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useCardContext } from "../../contexts/CardContext";
 import { useHisabContext } from "../../contexts/HisabContext";
+import TransferProfitDialog from "../../components/TransferProfitDialog/TransferProfitDialog";
 
 const Dashboard: React.FC = () => {
   const { user } = useUserContext();
@@ -15,10 +16,15 @@ const Dashboard: React.FC = () => {
   const { orders } = useOrderContext();
   const { cards } = useCardContext();
   const { hisabs } = useHisabContext();
+  const [isTransferProfitDialogOpen, setIsTransferProfitDialogOpen] =
+    useState(false);
 
   if (!user) {
     return <Typography>Please log in to view the dashboard.</Typography>;
   }
+
+  const openDialog = () => setIsTransferProfitDialogOpen(true);
+  const closeDialog = () => setIsTransferProfitDialogOpen(false);
 
   // Calculation for dashboard metrics
   // Current balance: Initial balance + Total Amount receive in bank - Credit Card Payments
@@ -129,10 +135,16 @@ const Dashboard: React.FC = () => {
         <Grid item xs={12} md={6}>
           <DashboardCard title={DASHBOARD_CARDS[4]} value={totalProfit} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} onClick={openDialog}>
           <DashboardCard title={DASHBOARD_CARDS[5]} value={realisedProfit} />
         </Grid>
       </Grid>
+
+      <TransferProfitDialog
+        realisedProfit={realisedProfit}
+        isOpen={isTransferProfitDialogOpen}
+        onClose={closeDialog}
+      />
     </Box>
   );
 };

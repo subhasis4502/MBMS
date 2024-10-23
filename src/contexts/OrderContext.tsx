@@ -33,6 +33,10 @@ interface OrderContextType {
     status: OrderModel["delivery"],
     newOrderId?: string
   ) => void;
+  updateTransferStatus: (
+    id: string,
+    transferStatus: boolean,
+  ) => void;
   deleteOrder: (id: string) => void;
   prevOrders: (orders: OrderModel[]) => void;
   isLoading: boolean;
@@ -139,6 +143,33 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const updateTransferStatus = async (
+    id: string,
+    transferStatus: boolean,
+  ) => {
+    try {
+      const data: { transfer:boolean; orderId?: string } = {
+        transfer: transferStatus,
+      };
+
+      const updatedOrder = await callApi({
+        endpoint: `/orders/transfer/${id}`,
+        token: user?.token,
+        requestType: "PUT",
+        data,
+      });
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === id ? { ...order, ...updatedOrder } : order
+        )
+      );
+    } catch (err) {
+      setError("Failed to update order transfer status. Please try again.");
+      console.error("Error updating order tranfer status:", err);
+    }
+  };
+
   const deleteOrder = async (id: string) => {
     try {
       await callApi({
@@ -164,6 +195,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
         fetchOrders,
         addOrder,
         updateOrderStatus,
+        updateTransferStatus,
         deleteOrder,
         prevOrders,
         isLoading,
