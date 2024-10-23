@@ -15,7 +15,7 @@ export interface CardModel {
   type: string;
   totalLimit: number;
   currentLimit: number;
-  payments: string[];
+  payments: PaymentModel[];
   billDate: Date;
   isActive: boolean;
 }

@@ -40,13 +40,19 @@ const CardItem: React.FC<CardItemProps> = ({ card }) => {
               <Typography variant="body2">{card.type}</Typography>
             </Box>
             <Box>
+              <Typography variant="body2">Current Limit: </Typography>
               <CurrentLimit gutterBottom>
                 ₹{card.currentLimit.toLocaleString()}
               </CurrentLimit>
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="body2">
-                  Total: ₹{card.totalLimit.toLocaleString()}
+                  Total Credit Used: ₹
+                  {card.payments
+                    .filter((payment) => payment.type === "Debit" && payment.source === cardName)
+                    .reduce((total, payment) => total + payment.amount, 0)
+                    .toLocaleString()}
                 </Typography>
+
                 <Typography variant="body2">
                   Due: {new Date(card.billDate).toLocaleDateString()}
                 </Typography>
