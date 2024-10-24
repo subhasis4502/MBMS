@@ -6,10 +6,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
-import { useUserContext } from "../../contexts/UserContext";
 import { useOrderContext } from "../../contexts/OrderContext";
-import { usePaymentContext } from "../../contexts/PaymentContext";
 
 interface TransferProfitProps {
   realisedProfit: number;
@@ -22,20 +19,11 @@ const TransferProfitDialog: React.FC<TransferProfitProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { user } = useUserContext();
   const { orders, updateTransferStatus } = useOrderContext();
-  const { addPayment } = usePaymentContext();
 
   const transferProfit = async () => {
-    addPayment({
-      amount: Number(realisedProfit.toFixed(0)),
-      source: user?.name || "",
-      type: "Credit",
-    });
-
-    // Update the order status to 'Payment Pending'
     orders
-      .filter((order) => !order.transfer)
+      .filter((order) => order.delivery === "Money Received" && !order.transfer)
       .forEach((order) => updateTransferStatus(order._id, true));
 
     onClose();

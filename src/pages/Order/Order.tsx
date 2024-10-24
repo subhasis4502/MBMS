@@ -22,6 +22,8 @@ import {
   Paper,
   CircularProgress,
   Alert,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -54,8 +56,9 @@ const Order: React.FC = () => {
     quantity: 1,
     pincode: "",
     amountPaid: 0,
-    profit: 0,
+    returnAmount: 0,
     doneBy: "",
+    isEmi: false,
   });
   const [newOrderId, setNewOrderId] = useState("");
   const [newStatus, setNewStatus] = useState<
@@ -85,8 +88,9 @@ const Order: React.FC = () => {
         quantity: 1,
         pincode: "",
         amountPaid: 0,
-        profit: 0,
+        returnAmount: 0,
         doneBy: "",
+        isEmi: false,
       });
     }
     setOpenCreateDialog(false);
@@ -361,17 +365,32 @@ const Order: React.FC = () => {
           />
           <TextField
             margin="dense"
-            label="Profit"
+            label="Return Amount"
             type="number"
             fullWidth
             required
-            value={newOrder.profit}
+            value={newOrder.returnAmount}
             onChange={(e) =>
               setNewOrder({
                 ...newOrder,
-                profit: parseInt(e.target.value),
+                returnAmount: parseInt(e.target.value),
               })
             }
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={newOrder.isEmi}
+                onChange={(e) =>
+                  setNewOrder({
+                    ...newOrder,
+                    isEmi: e.target.checked,
+                  })
+                }
+                color="primary"
+              />
+            }
+            label="EMI Transaction?"
           />
         </DialogContent>
         <DialogActions>

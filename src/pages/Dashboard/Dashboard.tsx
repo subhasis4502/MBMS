@@ -87,6 +87,16 @@ const Dashboard: React.FC = () => {
         )
         .reduce((sum, payment) => sum + payment.profit, 0);
 
+  // Shreyashee Profit
+  const shreyasheeProfit = orders
+        .filter(
+          (order) =>
+            order.doneByUser === user.name &&
+            order.delivery === "Money Received" &&
+            !order.transfer
+        )
+        .reduce((sum, payment) => sum + payment.profit, 0);
+
   return (
     <Box sx={{ flexGrow: 1, mt: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -138,6 +148,11 @@ const Dashboard: React.FC = () => {
         <Grid item xs={12} md={6} onClick={openDialog}>
           <DashboardCard title={DASHBOARD_CARDS[5]} value={realisedProfit} />
         </Grid>
+        {user.isAdmin && (
+          <Grid item xs={12} md={6}>
+            <DashboardCard title={"Shreyashee Profit"} value={shreyasheeProfit} />
+          </Grid>
+        )}
       </Grid>
 
       <TransferProfitDialog

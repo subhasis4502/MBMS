@@ -17,7 +17,7 @@ interface OrderContextType {
       OrderModel,
       | "_id"
       | "delivery"
-      | "returnAmount"
+      | "profit"
       | "orderDate"
       | "cashBack"
       | "commission"
@@ -87,7 +87,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({
       OrderModel,
       | "_id"
       | "delivery"
-      | "returnAmount"
+      | "profit"
       | "orderDate"
       | "cashBack"
       | "commission"
